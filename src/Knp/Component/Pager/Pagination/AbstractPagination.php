@@ -3,22 +3,27 @@
 namespace Knp\Component\Pager\Pagination;
 
 use Iterator;
+use Knp\Component\Pager\Pagination\PaginationItems\AdapterInterface;
 
 abstract class AbstractPagination implements Iterator, PaginationInterface
 {
     protected $currentPageNumber;
     protected $numItemsPerPage;
-    protected $items = [];
     protected $totalCount;
     protected $paginatorOptions;
     protected $customParameters;
+
+    /**
+     * @var AdapterInterface
+     */
+    private $items;
 
     /**
      * {@inheritDoc}
      */
     public function rewind(): void
     {
-        reset($this->items);
+        $this->items->rewind();
     }
 
     /**
@@ -26,7 +31,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function current()
     {
-        return current($this->items);
+        return $this->items->current();
     }
 
     /**
@@ -34,7 +39,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function key() 
     {
-        return key($this->items);
+        return $this->items->key();
     }
 
     /**
@@ -42,7 +47,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function next(): void
     {
-        next($this->items);
+        $this->items->next();
     }
 
     /**
@@ -50,7 +55,7 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function valid(): bool
     {
-        return key($this->items) !== null;
+        return $this->items->valid();
     }
 
     /**
@@ -58,9 +63,12 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function count(): int
     {
-        return count($this->items);
+        return $this->items->count();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setCustomParameters(array $parameters): void
     {
         $this->customParameters = $parameters;
@@ -135,13 +143,13 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
      */
     public function getPaginatorOption($name)
     {
-        return isset($this->paginatorOptions[$name]) ? $this->paginatorOptions[$name] : null;
+        return $this->paginatorOptions[$name] ?? null;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setItems(iterable $items): void
+    public function setItems(AdapterInterface $items): void
     {
         $this->items = $items;
     }
@@ -149,32 +157,40 @@ abstract class AbstractPagination implements Iterator, PaginationInterface
     /**
      * {@inheritDoc}
      */
-    public function getItems(): iterable
+    public function getItems(): AdapterInterface
     {
         return $this->items;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function offsetExists($offset): bool
     {
-        return array_key_exists($offset, $this->items);
+        return $this->items->offsetExists($offset);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function offsetGet($offset)
     {
-        return $this->items[$offset];
+        return $this->items->offsetGet($offset);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function offsetSet($offset, $value): void
     {
-        if (null === $offset) {
-            $this->items[] = $value;
-        } else {
-            $this->items[$offset] = $value;
-        }
+        $this->items->offsetSet($offset, $value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function offsetUnset($offset): void
     {
-        unset($this->items[$offset]);
+        $this->items->offsetUnset($offset);
     }
 }

@@ -3,6 +3,7 @@
 namespace Knp\Component\Pager\Pagination;
 
 use ArrayAccess, Countable, Traversable;
+use Knp\Component\Pager\Pagination\PaginationItems\AdapterInterface;
 
 /**
  * Pagination interface strictly defines
@@ -48,16 +49,18 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
     public function getTotalItemCount(): int;
 
     /**
-     * @param iterable $items
+     * @param AdapterInterface $items
+     *
+     * @return void
      */
-    public function setItems(iterable $items): void;
+    public function setItems(AdapterInterface $items): void;
 
     /**
      * Get current items
      *
-     * @return iterable
+     * @return AdapterInterface
      */
-    public function getItems(): iterable;
+    public function getItems(): AdapterInterface;
 
     /**
      * @param array $options
@@ -66,6 +69,8 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
 
     /**
      * Get pagination alias
+     *
+     * @param int|string $name
      *
      * @return mixed
      */
@@ -78,6 +83,8 @@ interface PaginationInterface extends Countable, Traversable, ArrayAccess
 
     /**
      * Return custom parameter
+     *
+     * @param string $name
      * 
      * @return mixed
      */

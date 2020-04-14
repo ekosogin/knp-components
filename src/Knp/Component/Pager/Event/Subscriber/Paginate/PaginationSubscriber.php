@@ -4,6 +4,7 @@ namespace Knp\Component\Pager\Event\Subscriber\Paginate;
 
 use Knp\Component\Pager\Event\BeforeEvent;
 use Knp\Component\Pager\Event\PaginationEvent;
+use Knp\Component\Pager\Pagination\PaginationItems\AdapterFactoryInterface;
 use Knp\Component\Pager\Pagination\SlidingPagination;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -14,6 +15,20 @@ class PaginationSubscriber implements EventSubscriberInterface
      * @var bool
      */
     private $isLoaded = false;
+
+    /**
+     * @var AdapterFactoryInterface
+     */
+    private $solariumAdapterFactory;
+
+    /**
+     * PaginationSubscriber constructor.
+     * @param AdapterFactoryInterface $solariumAdapterFactory
+     */
+    public function __construct(AdapterFactoryInterface $solariumAdapterFactory)
+    {
+        $this->solariumAdapterFactory = $solariumAdapterFactory;
+    }
 
     public function pagination(PaginationEvent $event): void
     {
@@ -41,7 +56,7 @@ class PaginationSubscriber implements EventSubscriberInterface
         $disp->addSubscriber(new Doctrine\CollectionSubscriber);
         $disp->addSubscriber(new Doctrine\DBALQueryBuilderSubscriber);
         $disp->addSubscriber(new PropelQuerySubscriber);
-        $disp->addSubscriber(new SolariumQuerySubscriber());
+        $disp->addSubscriber(new SolariumQuerySubscriber($this->solariumAdapterFactory));
         $disp->addSubscriber(new ElasticaQuerySubscriber());
 
         $this->isLoaded = true;
